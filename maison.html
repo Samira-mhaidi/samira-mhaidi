@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La Maison — Samira Mhaidi, créatrice de haute couture marocaine</title>
+  <meta name="description" content="Samira Mhaidi, diplômée du Collège LaSalle de Montréal, présente le caftan marocain sur les podiums internationaux depuis 2007.">
+  <meta name="theme-color" content="#15110e">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script>try{if(sessionStorage.getItem("sm_loaded"))document.documentElement.classList.add("no-loader")}catch(e){}</script>
+  <script defer src="assets/js/config.js"></script>
+  <script defer src="assets/js/seed.js"></script>
+  <script defer src="assets/js/store.js"></script>
+  <script defer src="assets/js/site.js"></script>
+</head>
+<body data-page="maison">
+  <div class="loader" aria-hidden="true"><div class="loader__in"><img src="assets/img/logo-sm-cercle.png" alt=""><div class="loader__bar"><i></i></div></div></div>
+
+  <main id="main">
+    <header class="page-hero">
+      <div class="page-hero__media"><img src="assets/img/portrait-samira.jpg" alt="Samira Mhaidi" style="object-position:50% 30%"></div>
+      <div class="wrap page-hero__content">
+        <span class="eyebrow" style="color:var(--gold-light)">La Maison</span>
+        <h1 class="display">Samira Mhaidi</h1>
+        <p>Créatrice et directrice artistique. Le caftan marocain, de Casablanca aux podiums du monde.</p>
+      </div>
+    </header>
+
+    <nav class="chapters" aria-label="Chapitres de la page">
+      <div class="wrap chapters__inner">
+        <ul class="chapters__list"></ul>
+        <div class="chapters__now"><span class="chapters__count"></span><span class="chapters__text"></span></div>
+      </div>
+      <div class="chapters__progress"><i></i></div>
+      <div class="chapters__ticks"></div>
+    </nav>
+
+    <section class="section" id="parcours" data-chapter="Parcours" data-chapter-text="De la littérature anglaise à la haute couture." data-bind="bio"></section>
+    <section class="section section--sand" id="reperes" data-chapter="Repères" data-chapter-text="Les défilés qui ont marqué la Maison." data-bind="timeline"></section>
+
+    <section class="section" id="valeurs" data-chapter="Valeurs" data-chapter-text="Héritage, savoir-faire et sur-mesure.">
+      <div class="wrap">
+        <div class="s-head">
+          <div class="reveal"><div class="s-head__num eyebrow">03 — Valeurs</div><h2 class="title">Ce qui guide <em>la Maison</em></h2></div>
+          <p class="lead reveal reveal-d1">Trois engagements qui se retrouvent dans chaque pièce sortie de l'atelier.</p>
+        </div>
+        <div class="grid-looks" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:48px">
+          <article class="reveal"><div class="star-divider" style="justify-content:flex-start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="6" y="6" width="12" height="12"/><rect x="6" y="6" width="12" height="12" transform="rotate(45 12 12)"/></svg></div><h3 class="title" style="font-size:34px;margin:20px 0 12px">Héritage</h3><p>Le caftan est un patrimoine vivant. La Maison en respecte les codes (coupe, sfifa, aâkad) pour mieux les réinterpréter.</p></article>
+          <article class="reveal reveal-d1"><div class="star-divider" style="justify-content:flex-start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="6" y="6" width="12" height="12"/><rect x="6" y="6" width="12" height="12" transform="rotate(45 12 12)"/></svg></div><h3 class="title" style="font-size:34px;margin:20px 0 12px">Savoir-faire</h3><p>Broderies, passementerie et finitions sont réalisées à la main par des artisans marocains, avec des matières choisies une à une.</p></article>
+          <article class="reveal reveal-d2"><div class="star-divider" style="justify-content:flex-start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="6" y="6" width="12" height="12"/><rect x="6" y="6" width="12" height="12" transform="rotate(45 12 12)"/></svg></div><h3 class="title" style="font-size:34px;margin:20px 0 12px">Sur-mesure</h3><p>Chaque cliente est reçue à l'atelier. La pièce est pensée, ajustée et finie pour elle, jusqu'au dernier essayage.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--sand" id="presse" data-chapter="Presse" data-chapter-text="Dossier de presse et demandes médias." data-bind="presse"></section>
+    <section class="section rdv" id="rendez-vous" data-chapter="Rendez-vous" data-chapter-text="Rencontrer la créatrice à l'atelier." data-bind="rendez-vous"></section>
+  </main>
+</body>
+</html>

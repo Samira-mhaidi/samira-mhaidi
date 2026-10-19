@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact & rendez-vous — Samira Mhaidi Haute Couture</title>
+  <meta name="description" content="Prenez rendez-vous à l'atelier Samira Mhaidi, 167 boulevard Yacoub El Mansour à Casablanca. Commandes sur mesure, mariage, presse.">
+  <meta name="theme-color" content="#15110e">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script>try{if(sessionStorage.getItem("sm_loaded"))document.documentElement.classList.add("no-loader")}catch(e){}</script>
+  <script defer src="assets/js/config.js"></script>
+  <script defer src="assets/js/seed.js"></script>
+  <script defer src="assets/js/store.js"></script>
+  <script defer src="assets/js/site.js"></script>
+</head>
+<body data-page="contact">
+  <div class="loader" aria-hidden="true"><div class="loader__in"><img src="assets/img/logo-sm-cercle.png" alt=""><div class="loader__bar"><i></i></div></div></div>
+
+  <main id="main">
+    <header class="page-hero page-hero--light">
+      <div class="wrap page-hero__content">
+        <span class="eyebrow" style="color:var(--gold-deep)">Atelier de Casablanca</span>
+        <h1 class="display">Contact &amp; rendez-vous</h1>
+        <p>Une question, une commande sur mesure, une tenue de mariage ? Écrivez-nous, nous vous répondons sous 48 heures ouvrées.</p>
+      </div>
+    </header>
+
+    <section class="section section--tight">
+      <div class="wrap">
+        <div class="contact">
+          <div>
+            <form name="contact" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" class="form reveal" novalidate>
+              <input type="hidden" name="form-name" value="contact">
+              <p hidden><label>Ne pas remplir : <input name="bot-field"></label></p>
+
+              <div class="field" data-field="name"><input id="f-name" name="name" type="text" placeholder=" " autocomplete="name" required><label for="f-name">Nom &amp; prénom *</label><span class="field__line"></span><span class="field__err"></span></div>
+              <div class="field" data-field="type">
+                <select id="f-type" name="type">
+                  <option value="rdv">Rendez-vous à l'atelier</option>
+                  <option value="commande">Commande sur mesure</option>
+                  <option value="mariee">Tenue de mariage ou de cérémonie</option>
+                  <option value="avant-premiere">Avant-première collection 2026</option>
+                  <option value="presse">Presse &amp; partenariats</option>
+                  <option value="autre">Autre demande</option>
+                </select>
+                <label for="f-type">Votre demande</label><span class="field__line"></span><span class="field__err"></span>
+              </div>
+              <div class="field" data-field="email"><input id="f-email" name="email" type="email" placeholder=" " autocomplete="email"><label for="f-email">E-mail</label><span class="field__line"></span><span class="field__err"></span></div>
+              <div class="field" data-field="phone"><input id="f-phone" name="phone" type="tel" placeholder=" " autocomplete="tel"><label for="f-phone">Téléphone / WhatsApp</label><span class="field__line"></span><span class="field__err"></span></div>
+              <div class="field" data-field="look"><input id="f-look" name="look" type="text" placeholder=" "><label for="f-look">Modèle ou collection</label><span class="field__line"></span><span class="field__err"></span></div>
+              <div class="field" data-field="date"><input id="f-date" name="date" type="date"><label for="f-date">Date souhaitée</label><span class="field__line"></span><span class="field__err"></span></div>
+              <div class="field field--full" data-field="message"><textarea id="f-msg" name="message" placeholder=" " rows="5"></textarea><label for="f-msg">Votre message *</label><span class="field__line"></span><span class="field__err"></span></div>
+
+              <label class="check"><input type="checkbox" name="consent" value="oui"><span>J'accepte que mes données soient utilisées pour répondre à ma demande, conformément à la <a href="confidentialite.html" style="text-decoration:underline">politique de confidentialité</a>. *</span></label>
+              <span class="field__err" data-err="consent" style="grid-column:1/-1;margin-top:-18px"></span>
+              <label class="check"><input type="checkbox" name="newsletter" value="oui"><span>Je souhaite recevoir les invitations et nouveautés de la Maison.</span></label>
+
+              <div class="form__foot">
+                <button type="submit" class="btn btn--solid">Envoyer ma demande</button>
+                <span class="form__note">* Champs obligatoires · e-mail ou téléphone requis</span>
+              </div>
+            </form>
+
+            <div class="form-ok" role="status">
+              <div class="star-divider"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="6" y="6" width="12" height="12"/><rect x="6" y="6" width="12" height="12" transform="rotate(45 12 12)"/></svg></div>
+              <h2 class="title" style="font-size:44px">Merci</h2>
+              <p class="lead">Votre demande a bien été transmise à l'atelier. Nous revenons vers vous sous 48 heures ouvrées.</p>
+            </div>
+          </div>
+
+          <div data-bind="contact-card"></div>
+        </div>
+
+        <div class="map" data-bind="map"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Déclaration du formulaire newsletter pour Netlify Forms (le formulaire visible est généré en JavaScript dans le pied de page). -->
+  <form name="newsletter" data-netlify="true" netlify-honeypot="bot-field" hidden><input type="email" name="email"><input name="bot-field"></form>
+</body>
+</html>

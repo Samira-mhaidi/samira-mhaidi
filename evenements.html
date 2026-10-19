@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Événements — Samira Mhaidi Haute Couture</title>
+  <meta name="description" content="Défilés, expositions et conférences : les événements de la Maison Samira Mhaidi et son engagement auprès de l'ANCMM.">
+  <meta name="theme-color" content="#15110e">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script>try{if(sessionStorage.getItem("sm_loaded"))document.documentElement.classList.add("no-loader")}catch(e){}</script>
+  <script defer src="assets/js/config.js"></script>
+  <script defer src="assets/js/seed.js"></script>
+  <script defer src="assets/js/store.js"></script>
+  <script defer src="assets/js/site.js"></script>
+</head>
+<body data-page="evenements">
+  <div class="loader" aria-hidden="true"><div class="loader__in"><img src="assets/img/logo-sm-cercle.png" alt=""><div class="loader__bar"><i></i></div></div></div>
+
+  <main id="main">
+    <header class="page-hero">
+      <div class="page-hero__media"><img src="assets/img/event-photocall-ancmm.jpg" alt="Samira Mhaidi à l'événement de l'ANCMM" style="object-position:50% 30%"></div>
+      <div class="wrap page-hero__content">
+        <span class="eyebrow" style="color:var(--gold-light)">La Maison en scène</span>
+        <h1 class="display">Événements</h1>
+        <p>Défilés, expositions, conférences : la création marocaine à la rencontre de son public.</p>
+      </div>
+    </header>
+
+    <nav class="chapters" aria-label="Chapitres de la page">
+      <div class="wrap chapters__inner">
+        <ul class="chapters__list"></ul>
+        <div class="chapters__now"><span class="chapters__count"></span><span class="chapters__text"></span></div>
+      </div>
+      <div class="chapters__progress"><i></i></div>
+      <div class="chapters__ticks"></div>
+    </nav>
+
+    <section class="section" id="actualites" data-chapter="Actualités" data-chapter-text="Les derniers rendez-vous de la Maison.">
+      <div class="wrap" data-bind="events-list"></div>
+    </section>
+    <section class="section section--sand" id="podiums" data-chapter="Podiums" data-chapter-text="Les défilés internationaux depuis 2007." data-bind="timeline"></section>
+    <section class="section rdv" id="inviter" data-chapter="Inviter la Maison" data-chapter-text="Défilé privé, exposition ou partenariat." data-bind="rendez-vous"></section>
+  </main>
+</body>
+</html>

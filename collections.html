@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Collections — Samira Mhaidi Haute Couture</title>
+  <meta name="description" content="Les collections de la Maison Samira Mhaidi : L'Âme du Caftan, Cheerful Harmony, Fresh Joy. Caftans, takchitas et tenues de cérémonie sur mesure.">
+  <meta name="theme-color" content="#15110e">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Montserrat:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script>try{if(sessionStorage.getItem("sm_loaded"))document.documentElement.classList.add("no-loader")}catch(e){}</script>
+  <script defer src="assets/js/config.js"></script>
+  <script defer src="assets/js/seed.js"></script>
+  <script defer src="assets/js/store.js"></script>
+  <script defer src="assets/js/site.js"></script>
+</head>
+<body data-page="collections">
+  <div class="loader" aria-hidden="true"><div class="loader__in"><img src="assets/img/logo-sm-cercle.png" alt=""><div class="loader__bar"><i></i></div></div></div>
+
+  <main id="main">
+    <header class="page-hero page-hero--light">
+      <div class="wrap page-hero__content">
+        <span class="eyebrow" style="color:var(--gold-deep)">Haute Couture · Casablanca</span>
+        <h1 class="display">Collections</h1>
+        <p>Chaque collection raconte une facette du caftan marocain : ses couleurs, ses broderies, ses grandes occasions.</p>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="wrap"><div class="coll-list" data-bind="collections"></div></div>
+    </section>
+
+    <section class="section section--sand" id="pieces">
+      <div class="wrap">
+        <div class="s-head">
+          <div class="reveal"><div class="s-head__num eyebrow">Catalogue</div><h2 class="title">Toutes <em>les pièces</em></h2></div>
+          <p class="lead reveal reveal-d1">Filtrez par catégorie, survolez une pièce pour l'animer, cliquez pour la découvrir et la demander.</p>
+        </div>
+        <div class="filters" data-bind="filters"></div>
+        <div class="grid-looks" data-bind="pieces"></div>
+      </div>
+    </section>
+
+    <section class="section" id="catalogues">
+      <div class="wrap">
+        <div class="s-head">
+          <div class="reveal"><div class="s-head__num eyebrow">Sélections</div><h2 class="title">Nos <em>catalogues</em></h2></div>
+          <p class="lead reveal reveal-d1">Des sélections thématiques à consulter en ligne ou à télécharger.</p>
+        </div>
+        <div class="cat-cards" data-bind="catalogues"></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
