@@ -34,11 +34,34 @@
   function badge(kind, title, brief) {
     return `<div class="ph-badge">${kind === "video" ? I.video : I.image}<div><b>${esc(title)}</b>${esc(brief || "")}</div></div>`;
   }
-  function media(ref, alt, cls, extra) {
+  /* Image avec version mobile (srcset) : le navigateur charge la taille adaptée à l'écran. */
+  const SIZES = { half: "(max-width: 760px) 92vw, 46vw", look: "(max-width: 760px) 72vw, (max-width: 1100px) 34vw, 24vw", thumb: "(max-width: 760px) 30vw, 12vw", full: "100vw" };
+  function imgTag(ref, alt, cls, sizes, extra) {
+    const u = SM.url(ref);
+    if (!u) return "";
+    const ss = SM.srcset(ref);
+    return `<img class="${cls || ""}" src="${esc(u)}"${ss ? ` srcset="${esc(ss)}" sizes="${SIZES[sizes] || sizes || SIZES.half}"` : ""} alt="${esc(alt || "")}" loading="lazy" decoding="async" ${extra || ""}>`;
+  }
+  function media(ref, alt, cls, extra, sizes) {
     const u = SM.url(ref);
     if (!u) return "";
     if (SM.isVideo(ref)) return `<video class="${cls || ""}" src="${esc(u)}" muted loop playsinline autoplay ${extra || ""}></video>`;
-    return `<img class="${cls || ""}" src="${esc(u)}" alt="${esc(alt || "")}" loading="lazy" decoding="async" ${extra || ""}>`;
+    return imgTag(ref, alt, cls, sizes, extra);
+  }
+  /* Lecteur vidéo léger : seule l'affiche est chargée ; la vidéo (MP4 ou YouTube)
+     n'est téléchargée et lancée qu'au clic du visiteur. */
+  function player(ref, poster, title) {
+    const yt = SM.youtubeId(ref);
+    const posterHtml = poster ? imgTag(poster, title, "player__poster") : yt ? `<img class="player__poster" src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="${esc(title || "")}" loading="lazy">` : "";
+    return `<div class="player" data-player="${esc(yt ? "yt:" + yt : SM.url(ref))}" data-poster="${esc(poster ? SM.url(poster) : "")}" data-title="${esc(title || "")}">${posterHtml}
+      <button type="button" class="player__btn" aria-label="Lire la vidéo${title ? " : " + esc(title) : ""}"><span class="film__play">${I.play}</span><span class="player__label eyebrow">Lire la vidéo</span></button></div>`;
+  }
+  /* Galerie d'un événement : vignettes légères, photo en grand au clic. */
+  function gallery(list, title) {
+    const max = 6, more = list.length - max;
+    const cols = list.length === 4 || list.length === 2 ? list.length : 3;
+    return `<div class="gallery" style="grid-template-columns:repeat(${cols},minmax(0,1fr))" data-gallery="${esc(JSON.stringify(list.map((g) => SM.url(g))))}" data-title="${esc(title)}">${list.slice(0, max).map((g, i) =>
+      `<button type="button" class="gallery__item" data-gi="${i}" aria-label="Agrandir la photo ${i + 1}">${imgTag(g, title, "", "thumb")}${i === max - 1 && more > 0 ? `<span class="gallery__more">+${more}</span>` : ""}</button>`).join("")}</div>`;
   }
   function btn(label, href, mod, attrs) {
     return `<a class="btn ${mod || ""}" href="${esc(href)}" ${attrs || ""}><span class="fill"></span>${esc(label)}</a>`;
@@ -53,8 +76,8 @@
     let m;
     if (!img) m = ph("image", "Photo à fournir", l.brief || "Photo du look, format portrait 2:3, 1600 px minimum.");
     else {
-      m = `<img class="look__main" src="${esc(img)}" alt="${esc(l.name)}" loading="lazy" decoding="async">`;
-      if (alt && !vid) m += `<img class="look__alt" src="${esc(alt)}" alt="" loading="lazy" decoding="async">`;
+      m = imgTag(l.image, l.name, "look__main", "look");
+      if (alt && !vid) m += imgTag(l.hoverImage, "", "look__alt", "look");
       if (vid) m += `<video data-src="${esc(vid)}" muted loop playsinline preload="none"></video>`;
     }
     const tag = !img ? "" : vid ? `<span class="look__tag look__tag--video">Vidéo</span>` : !alt ? `<span class="look__tag look__tag--video">Vidéo au survol : à intégrer</span>` : "";
@@ -113,7 +136,7 @@
       <div class="mega__col"><h4 class="eyebrow muted">Collections</h4><ul>${cols.map((c) => `<li><a href="${c.status === "upcoming" ? "collections.html" : "collection.html?c=" + c.slug}" data-img="${esc(SM.url(c.cover))}" class="${c.status === "upcoming" ? "is-soon" : ""}">${esc(c.name)} <small>${esc(c.year)}${c.status === "upcoming" ? " · bientôt" : ""}</small></a></li>`).join("")}</ul></div>
       <div class="mega__col"><h4 class="eyebrow muted">Catégories</h4><ul>${data.categories.map((c) => `<li><a href="collections.html?cat=${c.slug}#pieces">${esc(c.name)}</a></li>`).join("")}</ul></div>
       <div class="mega__col"><h4 class="eyebrow muted">Catalogues</h4><ul>${data.catalogues.map((c) => `<li><a href="collection.html?catalogue=${c.slug}">${esc(c.name)}</a></li>`).join("")}<li><a href="contact.html?type=rdv">Rendez-vous privé</a></li></ul></div>
-      <figure class="mega__preview">${cols.filter((c) => c.cover).map((c, i) => `<img src="${esc(SM.url(c.cover))}" alt="" class="${i === 0 ? "is-on" : ""}" data-src="${esc(SM.url(c.cover))}">`).join("")}${firstImg ? "" : ph("image", "Visuel à fournir", "")}<figcaption class="eyebrow">Haute Couture</figcaption></figure>
+      <figure class="mega__preview">${cols.filter((c) => c.cover).map((c, i) => imgTag(c.cover, "", i === 0 ? "is-on" : "", "320px", `data-src="${esc(SM.url(c.cover))}"`)).join("")}${firstImg ? "" : ph("image", "Visuel à fournir", "")}<figcaption class="eyebrow">Haute Couture</figcaption></figure>
     </div></div>
     </header>`;
     document.body.prepend(top);
@@ -138,7 +161,7 @@
     const social = (k, label) => `<a href="${esc(so[k] || "#")}" ${so[k] ? 'target="_blank" rel="noopener"' : `title="Lien ${label} à renseigner dans le back-office"`} aria-label="${label}">${I[k === "instagram" ? "ig" : k === "facebook" ? "fb" : k === "linkedin" ? "in" : "tt"]}</a>`;
     document.body.insertAdjacentHTML("beforeend", `<footer class="footer"><div class="footer__zel"></div><div class="wrap">
       <div class="footer__top">
-        <div class="footer__brand"><img src="assets/img/logo-sm-cercle.png" alt="Logo Samira Mhaidi" width="108" height="110"><p>Haute couture marocaine, pièces uniques réalisées à la main dans notre atelier de Casablanca.</p></div>
+        <div class="footer__brand"><img src="assets/img/logo-sm-cercle.webp" alt="Logo Samira Mhaidi" width="108" height="110"><p>Haute couture marocaine, pièces uniques réalisées à la main dans notre atelier de Casablanca.</p></div>
         <div><h4 class="eyebrow">La Maison</h4><ul><li><a href="maison.html">Samira Mhaidi</a></li><li><a href="index.html#savoir-faire">Savoir-faire</a></li><li><a href="evenements.html">Événements</a></li><li><a href="contact.html">Contact</a></li></ul></div>
         <div><h4 class="eyebrow">Collections</h4><ul>${cols.map((c) => `<li><a href="${c.status === "upcoming" ? "collections.html" : "collection.html?c=" + c.slug}">${esc(c.name)}</a></li>`).join("")}</ul></div>
         <div class="footer__news"><h4 class="eyebrow">La lettre de la Maison</h4><p>Nouvelles collections, défilés et invitations privées.</p>
@@ -155,6 +178,12 @@
     document.body.insertAdjacentHTML("beforeend", `
       <a class="wa" href="${waLink()}" target="_blank" rel="noopener" data-track="whatsapp" aria-label="Écrire sur WhatsApp">${I.wa}<span>Écrire à l'atelier</span></a>
       <div class="drawer" aria-hidden="true"><div class="drawer__veil" data-drawer-close></div><div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Détail du look"><div class="drawer__media"></div><div class="drawer__body"></div></div></div>
+      <div class="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Photo agrandie">
+        <button type="button" class="lightbox__close" data-lb-close aria-label="Fermer">×</button>
+        <button type="button" class="lightbox__nav lightbox__nav--prev" data-lb="-1" aria-label="Photo précédente">${I.left}</button>
+        <figure class="lightbox__fig"><img alt=""><figcaption class="eyebrow"></figcaption></figure>
+        <button type="button" class="lightbox__nav lightbox__nav--next" data-lb="1" aria-label="Photo suivante">${I.right}</button>
+      </div>
       <div class="cursor"><b>Voir</b></div>
       <div class="cookie" role="dialog" aria-live="polite" aria-label="Cookies">
         <h3>Votre confidentialité</h3>
@@ -179,7 +208,7 @@
     const words = h.title.split(" ");
     const l1 = words.length > 1 ? words.slice(0, -1).join(" ") : h.title, l2 = words.length > 1 ? words[words.length - 1] : "";
     $("[data-bind=hero]").innerHTML = `
-      <div class="hero__media">${h.video ? media(h.video, "", "", `poster="${esc(SM.url(h.poster))}"`) : h.poster ? `<img src="${esc(SM.url(h.poster))}" alt="Caftan Samira Mhaidi devant une porte dorée" fetchpriority="high">` : ph("video", "Vidéo d'ouverture à intégrer", h.brief, true)}</div>
+      <div class="hero__media">${h.video ? media(h.video, "", "", `poster="${esc(SM.url(h.poster))}"`) : h.poster ? imgTag(h.poster, "Caftan Samira Mhaidi devant une porte dorée", "", "full", 'fetchpriority="high"').replace(' loading="lazy"', "") : ph("video", "Vidéo d'ouverture à intégrer", h.brief, true)}</div>
       <div class="hero__shade"></div><div class="hero__frame"></div>
       <div class="hero__content">
         <svg class="hero__arch" viewBox="0 0 400 560" fill="none" stroke="#e3c77a" stroke-width="1" aria-hidden="true"><path d="M30 560V260C30 140 110 60 200 26c90 34 170 114 170 234v300"/><path d="M52 560V266C52 160 122 88 200 56c78 32 148 104 148 210v294" opacity=".5"/></svg>
@@ -254,11 +283,21 @@
   function timeline() {
     return `<div class="timeline" data-timeline><div class="timeline__line"><i></i></div><ol class="timeline__list">${S.timeline.map((t, i) => `<li class="timeline__item reveal reveal-d${(i % 3) + 1}"><span class="timeline__year">${esc(t.year)}</span><h4>${esc(t.title)}</h4><p>${esc(t.text)}</p></li>`).join("")}</ol></div>`;
   }
+  /* Carte d'événement (accueil) : affiche seule, jamais de vidéo en lecture automatique. */
   function eventCard(e) {
-    const hasImg = e.cover || e.video;
-    return `<a class="event reveal${hasImg ? "" : " event--ph"}" href="evenements.html#${esc(e.id)}" data-cursor="Voir">
-      ${e.video ? media(e.video, e.title) : e.cover ? media(e.cover, e.title) : ph("video", e.type === "Film" ? "Film à intégrer" : "Visuel à fournir", e.brief, true)}
+    const yt = SM.youtubeId(e.video);
+    const visual = e.cover ? media(e.cover, e.title, "", "", "(max-width: 760px) 92vw, 40vw")
+      : yt ? `<img src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="${esc(e.title)}" loading="lazy">` : "";
+    return `<a class="event reveal${visual ? "" : " event--ph"}" href="evenements.html#${esc(e.id)}" data-cursor="${e.video ? "Regarder" : "Voir"}">
+      ${visual || ph("video", e.type === "Film" ? "Film à intégrer" : "Visuel à fournir", e.brief, true)}
+      ${e.video && visual ? `<span class="event__play" aria-hidden="true">${I.play}</span>` : ""}
       <div class="event__body"><span class="eyebrow" style="color:var(--gold-light)">${esc(e.type)} · ${esc(e.dateLabel || e.date)}</span><h3>${esc(e.title)}</h3>${e.text ? `<p>${esc(e.text)}</p>` : ""}</div></a>`;
+  }
+  /* Visuel principal d'un événement : lecteur vidéo (au clic) ou photo. */
+  function eventVisual(e) {
+    if (e.video) return player(e.video, e.poster || e.cover, e.title);
+    if (e.cover) return media(e.cover, e.title);
+    return ph("video", e.type === "Film" ? "Film à intégrer" : "Visuel à fournir", e.brief, true);
   }
   function rdvBlock(eyebrow) {
     return `<div class="wrap"><span class="eyebrow" style="color:var(--gold-light)">${esc(eyebrow)}</span>
@@ -324,7 +363,7 @@
     $("[data-bind=film]").innerHTML = `<div class="wrap">${sectionHead("03", "Le film", "La collection <em>en mouvement</em>", "")}<div class="film reveal">${video ? media(video, "") : ph("video", "Vidéo à intégrer", videoBrief, true)}</div></div>`;
     $("[data-bind=rendez-vous]").innerHTML = rdvBlock("04 — Commander");
     const others = SM.publishedCollections(data).filter((c) => c !== coll && c.status === "published");
-    $("[data-bind=autres]").innerHTML = `<div class="wrap">${sectionHead("", "Autres collections", "Poursuivre <em>la découverte</em>", "", true)}<div class="grid-looks" style="grid-template-columns:repeat(${Math.min(3, others.length)},minmax(0,1fr))">${others.slice(0, 3).map((c) => `<a class="look" href="collection.html?c=${c.slug}" data-cursor="Voir"><div class="look__media" style="aspect-ratio:4/5">${c.cover ? `<img class="look__main" src="${esc(SM.url(c.cover))}" alt="${esc(c.name)}" loading="lazy">` : ph("image", "Visuel à fournir", "")}</div><div class="look__info"><span class="look__name">${esc(c.name)}</span><span class="look__meta">${esc(c.year)}</span></div></a>`).join("")}</div></div>`;
+    $("[data-bind=autres]").innerHTML = `<div class="wrap">${sectionHead("", "Autres collections", "Poursuivre <em>la découverte</em>", "", true)}<div class="grid-looks" style="grid-template-columns:repeat(${Math.min(3, others.length)},minmax(0,1fr))">${others.slice(0, 3).map((c) => `<a class="look" href="collection.html?c=${c.slug}" data-cursor="Voir"><div class="look__media" style="aspect-ratio:4/5">${c.cover ? imgTag(c.cover, c.name, "look__main", "look") : ph("image", "Visuel à fournir", "")}</div><div class="look__info"><span class="look__name">${esc(c.name)}</span><span class="look__meta">${esc(c.year)}</span></div></a>`).join("")}</div></div>`;
   }
 
   function renderMaison() {
@@ -336,7 +375,11 @@
         <div class="maison__sign"><span class="script">Samira Mhaidi</span><span class="eyebrow muted">Directrice artistique</span></div></div>
     </div></div>`;
     $("[data-bind=timeline]").innerHTML = `<div class="wrap">${sectionHead("02", "Repères", "Les grandes <em>étapes</em>", "Des podiums de Montréal à Istanbul, le caftan marocain présenté au monde.")}${timeline()}</div>`;
-    $("[data-bind=presse]").innerHTML = `<div class="wrap"><div class="split">
+    const tv = data.events.find((e) => e.type === "Télévision" && e.video);
+    $("[data-bind=presse]").innerHTML = tv ? `<div class="wrap"><div class="split">
+      <div class="split__media mask" style="aspect-ratio:${esc(tv.ratio || "16/9")}">${player(tv.video, tv.poster || tv.cover, tv.title)}</div>
+      <div class="split__text reveal"><div class="s-head__num eyebrow">04 — Presse & médias</div><h2 class="title">Vu <em>à la télévision</em></h2><p class="lead" style="margin-top:22px">${esc(tv.title)} — ${esc(tv.text)}</p>
+      <div style="margin-top:30px;display:flex;gap:16px;flex-wrap:wrap">${btn("Tous les événements", "evenements.html")}${btn("Contact presse", "contact.html?type=presse")}</div></div></div></div>` : `<div class="wrap"><div class="split">
       <div class="split__media" style="aspect-ratio:4/3">${ph("pdf", "Dossier de presse à fournir", "PDF du dossier de presse (biographie, visuels HD, contacts presse) téléchargeable depuis cette section.")}</div>
       <div class="split__text reveal"><div class="s-head__num eyebrow">04 — Presse</div><h2 class="title">Dossier <em>de presse</em></h2><p class="lead" style="margin-top:22px">Journalistes, stylistes et organisateurs d'événements : demandez nos visuels haute définition et la biographie officielle.</p>
       <div style="margin-top:30px">${btn("Contact presse", "contact.html?type=presse")}</div></div></div></div>`;
@@ -344,11 +387,14 @@
   }
 
   function renderEvents() {
-    $("[data-bind=events-list]").innerHTML = data.events.map((e, i) => `<article class="split${i % 2 ? " split--rev" : ""}" id="${esc(e.id)}" style="margin-bottom:clamp(70px,9vw,130px)">
-      <div class="split__media mask" style="aspect-ratio:${e.type === "Film" ? "16/10" : "4/5"}">${e.video ? media(e.video, e.title) : e.cover ? media(e.cover, e.title) : ph("video", e.type === "Film" ? "Film à intégrer" : "Visuel à fournir", e.brief, true)}</div>
-      <div class="split__text reveal"><span class="eyebrow muted">${esc(e.type)} · ${esc(e.dateLabel || e.date)}${e.place ? " · " + esc(e.place) : ""}</span><h2 class="title">${esc(e.title)}</h2><p class="lead">${esc(e.text)}</p>
-      ${(e.gallery || []).length > 1 ? `<div class="film-strip" style="grid-template-columns:repeat(3,1fr);margin-top:26px">${e.gallery.map((g) => `<div class="look__media" style="aspect-ratio:1">${media(g, e.title)}</div>`).join("")}</div>` : ""}</div>
-    </article>`).join("");
+    $("[data-bind=events-list]").innerHTML = data.events.map((e, i) => {
+      const gal = (e.gallery || []).filter(Boolean);
+      return `<article class="split ev-row${i % 2 ? " split--rev" : ""}" id="${esc(e.id)}">
+      <div class="split__media mask" style="aspect-ratio:${esc(e.ratio || (e.type === "Film" ? "16/10" : "4/5"))}">${eventVisual(e)}</div>
+      <div class="split__text reveal">${i === 0 ? `<span class="chip chip--gold">À la une</span>` : ""}<span class="eyebrow muted">${esc(e.type)} · ${esc(e.dateLabel || e.date)}${e.place ? " · " + esc(e.place) : ""}</span><h2 class="title">${esc(e.title)}</h2><p class="lead">${esc(e.text)}</p>
+      ${gal.length > 1 ? gallery(gal, e.title) : ""}</div>
+    </article>`;
+    }).join("");
     $("[data-bind=timeline]").innerHTML = `<div class="wrap">${sectionHead("", "Podiums", "Défilés <em>internationaux</em>", "", true)}${timeline()}</div>`;
     $("[data-bind=rendez-vous]").innerHTML = rdvBlock("Inviter la Maison");
   }
@@ -602,6 +648,54 @@
     });
   }
 
+  /* Lecteurs vidéo (lancement au clic) et galeries photo (agrandissement). */
+  function initMedia() {
+    document.addEventListener("click", (e) => {
+      const b = e.target.closest(".player__btn");
+      if (!b) return;
+      const p = b.closest("[data-player]"), src = p.dataset.player, title = p.dataset.title || "";
+      $$("[data-player] video").forEach((v) => v.pause());
+      if (src.startsWith("yt:")) {
+        p.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${esc(src.slice(3))}?autoplay=1&rel=0&playsinline=1" title="${esc(title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+      } else {
+        p.innerHTML = `<video src="${esc(src)}"${p.dataset.poster ? ` poster="${esc(p.dataset.poster)}"` : ""} controls autoplay playsinline preload="auto"></video>`;
+        const v = $("video", p); v.play().catch(() => {});
+      }
+      p.classList.add("is-playing");
+      SM.track("video_play", { video: title });
+    });
+
+    const lb = $(".lightbox"), lbImg = $("img", lb), lbCap = $("figcaption", lb);
+    let list = [], idx = 0, title = "";
+    const show = (i) => {
+      idx = (i + list.length) % list.length;
+      lbImg.src = list[idx]; lbImg.alt = title;
+      lbCap.textContent = `${title} · ${idx + 1} / ${list.length}`;
+      $$(".lightbox__nav", lb).forEach((n) => (n.hidden = list.length < 2));
+    };
+    const close = () => { lb.classList.remove("is-open"); lb.setAttribute("aria-hidden", "true"); document.documentElement.style.overflow = ""; };
+    document.addEventListener("click", (e) => {
+      const it = e.target.closest("[data-gi]");
+      if (it) {
+        const g = it.closest("[data-gallery]");
+        list = JSON.parse(g.dataset.gallery); title = g.dataset.title || "";
+        show(Number(it.dataset.gi));
+        lb.classList.add("is-open"); lb.setAttribute("aria-hidden", "false");
+        document.documentElement.style.overflow = "hidden";
+        $(".lightbox__close", lb).focus();
+        return;
+      }
+      const nav = e.target.closest("[data-lb]"); if (nav) { show(idx + Number(nav.dataset.lb)); return; }
+      if (e.target.closest("[data-lb-close]") || e.target === lb) close();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (!lb.classList.contains("is-open")) return;
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowRight") show(idx + 1);
+      if (e.key === "ArrowLeft") show(idx - 1);
+    });
+  }
+
   function initSavoirFaire() {
     const steps = $$("[data-sf]");
     if (!steps.length) return;
@@ -739,7 +833,7 @@
     renderChrome();
     const pages = { home: renderHome, collections: renderCollections, collection: renderCollection, maison: renderMaison, evenements: renderEvents, contact: renderContact };
     if (pages[page]) pages[page]();
-    initButtons(); initHeader(); initChapters(); initRails(); initLooks(); initSavoirFaire(); initReveal(); initCursor(); initTracking(); initNewsletter(); initCookies();
+    initButtons(); initHeader(); initChapters(); initRails(); initLooks(); initMedia(); initSavoirFaire(); initReveal(); initCursor(); initTracking(); initNewsletter(); initCookies();
     if (location.hash) { const t = document.getElementById(location.hash.slice(1)); if (t) setTimeout(() => t.scrollIntoView(), 50); }
     SM.track("pageview", { title: document.title });
     hideLoader();

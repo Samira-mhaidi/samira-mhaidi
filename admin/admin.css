@@ -35,7 +35,7 @@ h1, h2, h3 { margin: 0; font-weight: 500; }
 
 /* ---------- connexion ---------- */
 .login { min-height: 100vh; display: grid; grid-template-columns: 1.1fr 1fr; }
-.login__visual { position: relative; background: #15110e url("../assets/img/hero-porte-doree.jpg") center 25% / cover; }
+.login__visual { position: relative; background: #15110e url("../assets/img/hero-porte-doree.webp") center 25% / cover; }
 .login__visual::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(21, 17, 14, 0.8), rgba(21, 17, 14, 0.1)); }
 .login__quote { position: absolute; left: 48px; right: 48px; bottom: 48px; z-index: 2; color: #faf6ef; }
 .login__quote b { font-family: var(--f-display); font-weight: 400; font-size: 34px; letter-spacing: 0.1em; display: block; }

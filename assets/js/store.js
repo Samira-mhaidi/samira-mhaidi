@@ -72,11 +72,20 @@
   SM.contentMissing = false;
   SM.contentError = null;
 
-  /* Complète un contenu enregistré avec les rubriques ajoutées depuis dans seed.js. */
+  /* Complète un contenu enregistré avec les rubriques ajoutées depuis dans seed.js,
+     puis applique une seule fois chaque mise à jour de contenu (SM_PATCHES, seed.js).
+     Le back-office enregistre le résultat à la connexion suivante. */
   function complete(d) {
     const seed = window.SM_SEED;
     Object.keys(seed).forEach((k) => { if (d[k] === undefined) d[k] = clone(seed[k]); });
     ["settings", "integrations"].forEach((k) => Object.keys(seed[k]).forEach((s) => { if (d[k][s] === undefined) d[k][s] = clone(seed[k][s]); }));
+    d.appliedPatches = d.appliedPatches || [];
+    (window.SM_PATCHES || []).forEach((p) => {
+      if (d.appliedPatches.includes(p.id)) return;
+      safe(() => p.apply(d, clone));
+      d.appliedPatches.push(p.id);
+      SM.patched = true;
+    });
     return d;
   }
 
@@ -103,7 +112,7 @@
   SM.getData = function () {
     if (live) return complete(clone(remote || window.SM_SEED));
     const stored = readJSON(KEYS.data, null);
-    if (stored && stored.version === window.SM_SEED.version) return stored;
+    if (stored && stored.version === window.SM_SEED.version) return complete(stored);
     return clone(window.SM_SEED);
   };
 
@@ -206,13 +215,30 @@
       (all || []).forEach((f) => { if (!SM.mediaUrls[f.id]) SM.mediaUrls[f.id] = URL.createObjectURL(f.blob); });
     } catch (e) { /* navigation privée : pas de médias importés */ }
   };
+  /* Photos du site (assets/img/*.jpg|png) : servies en WebP. Chaque image existe en
+     deux tailles, nom.webp (1600 px max) et nom-sm.webp (600 px) — voir README. */
+  const LOCAL_IMG = /^assets\/img\/(?!favicon)([\w-]+)\.(jpe?g|png)$/i;
   SM.url = function (ref) {
     if (!ref) return "";
     if (ref.startsWith("idb:")) return SM.mediaUrls[ref.slice(4)] || "";
     if (/^(https?:|data:|blob:|\/)/.test(ref)) return ref;
+    const m = ref.match(LOCAL_IMG);
+    if (m) return SM.base + "assets/img/" + m[1] + ".webp";
     return SM.base + ref;
   };
+  /* Attribut srcset (version mobile + grand format) pour les photos du site, sinon "". */
+  SM.srcset = function (ref) {
+    const m = ref && ref.match(LOCAL_IMG);
+    if (!m) return "";
+    const b = SM.base + "assets/img/" + m[1];
+    return `${b}-sm.webp 600w, ${b}.webp 1600w`;
+  };
   SM.isVideo = (ref, type) => /video/.test(type || "") || /\.(mp4|webm|mov)(\?|$)/i.test(ref || "");
+  /* Identifiant d'une vidéo YouTube (youtu.be, watch?v=, embed, shorts), sinon "". */
+  SM.youtubeId = function (ref) {
+    const m = String(ref || "").match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/);
+    return m ? m[1] : "";
+  };
 
   /* Redimensionne une image importée (1800 px max) et la convertit en WebP
      (repli JPEG/PNG si le navigateur ne sait pas encoder le WebP).

@@ -6,9 +6,49 @@
  *
  * Champ vide ("") pour une image ou une vidéo = le site affiche un bloc vide annoté
  * qui décrit le visuel attendu (champ "brief").
+ *
+ * Vidéos d'événement : fichier MP4 (assets/video/…) ou lien YouTube. Elles ne se
+ * lancent qu'au clic du visiteur ; "cover" sert d'affiche.
  */
+
+/* Contenus ajoutés en novembre 2026 (2M, Festival Voix de Femmes, Arabian Travel Market).
+   Repris dans SM_SEED et appliqués une fois au contenu déjà enregistré (SM_PATCHES). */
+window.SM_UPDATE_2026_11 = {
+  events: [
+    {
+      id: "ev-2m-sabahiyat", title: "La Maison dans « Sabahiyat 2M »", type: "Télévision", date: "", dateLabel: "2026", place: "2M · Casablanca",
+      cover: "assets/img/evt-2m-poster.jpg", video: "assets/video/sabahiyat-2m.mp4", ratio: "16/9",
+      text: "Invitée de la matinale de 2M, la Maison présente ses créations sur le plateau : gros plans sur les broderies et les ceintures, puis défilé de plusieurs pièces de la collection.",
+      gallery: ["assets/img/evt-2m-groupe.jpg", "assets/img/evt-2m-noir.jpg", "assets/img/evt-2m-pois.jpg", "assets/img/evt-2m-anis.jpg"]
+    },
+    {
+      id: "ev-atm-2026", title: "Arabian Travel Market 2026", type: "Salon international", date: "2026-09-14", dateLabel: "14 – 17 septembre 2026", place: "Dubai World Trade Centre · Dubaï",
+      cover: "assets/img/evt-atm-emeraude-assise.jpg", video: "",
+      text: "Les caftans de la Maison présentés sur le stand marocain du grand salon international du voyage et du tourisme : velours émeraude brodé d'or, dentelles et pièces de cérémonie, face à un public venu du monde entier.",
+      gallery: ["assets/img/evt-atm-emeraude-assise.jpg", "assets/img/evt-atm-emeraude.jpg", "assets/img/evt-atm-trio.jpg", "assets/img/evt-atm-groupe.jpg", "assets/img/evt-atm-dentelle.jpg", "assets/img/evt-atm-fuchsia.jpg", "assets/img/evt-atm-salon.jpg", "assets/img/evt-atm-invitees.jpg", "assets/img/evt-atm-noir.jpg"]
+    },
+    {
+      id: "ev-voix-de-femmes-2026", title: "Festival Voix de Femmes — 14e édition", type: "Défilé", date: "2026-08-13", dateLabel: "13 août 2026", place: "Marina Smir · Tétouan",
+      cover: "assets/img/evt-vdf-emeraude.jpg", video: "assets/video/voix-de-femmes-finale.mp4", ratio: "4/5",
+      text: "Défilé de la collection Samira Mhaidi lors de la 14e édition du Festival Voix de Femmes, organisée à Tétouan du 12 au 15 août 2026 sous le Haut Patronage de Sa Majesté le Roi Mohammed VI.",
+      gallery: ["assets/img/evt-vdf-emeraude.jpg", "assets/img/evt-vdf-violet.jpg", "assets/img/evt-vdf-pois.jpg", "assets/img/evt-vdf-olive.jpg", "assets/img/evt-vdf-rose.jpg", "assets/img/evt-vdf-mauve.jpg"]
+    }
+  ],
+  messages: [
+    "Vu à la télévision : la Maison dans « Sabahiyat 2M »",
+    "Arabian Travel Market 2026 · Dubaï",
+    "Festival Voix de Femmes 2026 · Tétouan"
+  ],
+  timeline: [
+    { year: "2026", title: "Festival Voix de Femmes, Tétouan", text: "Défilé de la collection lors de la 14e édition du festival." },
+    { year: "2026", title: "Arabian Travel Market, Dubaï", text: "Les caftans de la Maison sur le stand marocain du salon." }
+  ],
+  instagram: "https://www.instagram.com/samiramhaidiofficiel/"
+};
+
 window.SM_SEED = {
   version: 1,
+  appliedPatches: ["2026-11-medias"],
 
   settings: {
     brand: "Samira Mhaidi",
@@ -20,17 +60,17 @@ window.SM_SEED = {
     city: "Casablanca, Maroc",
     mapsQuery: "167 Bd Yacoub El Mansour, Casablanca 20250",
     hours: "Sur rendez-vous · du lundi au samedi",
-    socials: { instagram: "", facebook: "", linkedin: "", tiktok: "" },
+    socials: { instagram: window.SM_UPDATE_2026_11.instagram, facebook: "", linkedin: "", tiktok: "" },
 
     announcement: {
       enabled: true,
       speed: 38,
-      messages: [
+      messages: window.SM_UPDATE_2026_11.messages.concat([
         "Rendez-vous privés ouverts à l'atelier de Casablanca",
         "Créations sur mesure · délai de confection de 8 à 12 semaines",
         "Nouvelle collection Haute Couture 2026 — bientôt dévoilée",
         "Expédition internationale sur demande"
-      ]
+      ])
     },
 
     hero: {
@@ -77,7 +117,7 @@ window.SM_SEED = {
       { year: "2012", title: "Arab Fashion Amsterdam", text: "Présentation de ses créations aux Pays-Bas." },
       { year: "2016", title: "Ambassade du Maroc, Beyrouth", text: "Défilé officiel au Liban." },
       { year: "2017", title: "Fashion Week d'Istanbul", text: "Le caftan marocain sur le podium turc." }
-    ]
+    ].concat(window.SM_UPDATE_2026_11.timeline)
   },
 
   integrations: {
@@ -170,12 +210,30 @@ window.SM_SEED = {
     { id: "cat-ceremonie", slug: "ceremonies-mariage", name: "Cérémonies & Mariage", description: "Pièces pensées pour le mariage, les fiançailles et la henné.", pdf: "", pdfBrief: "Catalogue mariage PDF à fournir.", lookIds: ["lk-ame-3", "lk-ame-7", "lk-fj-1", "lk-fj-2"] }
   ],
 
-  events: [
+  events: window.SM_UPDATE_2026_11.events.concat([
     { id: "ev-ancmm", title: "Association Nationale des Créateurs Marocains de Mode", type: "Exposition", date: "", dateLabel: "Date à confirmer", place: "Casablanca", cover: "assets/img/event-photocall-ancmm.jpg", text: "Exposition des créations de la Maison aux côtés des créateurs de l'ANCMM.", gallery: ["assets/img/event-photocall-ancmm.jpg"] },
     { id: "ev-conference", title: "Conférence ANCMM", type: "Conférence", date: "", dateLabel: "Date à confirmer", place: "Casablanca", cover: "assets/img/event-conference-parole.jpg", text: "Table ronde sur la création marocaine et l'avenir du caftan.", gallery: ["assets/img/event-conference.jpg", "assets/img/event-conference-parole.jpg", "assets/img/event-intervention.jpg"] },
     { id: "ev-rencontre", title: "Rencontre & présentation", type: "Rencontre", date: "", dateLabel: "Date à confirmer", place: "Maroc", cover: "assets/img/event-invitees-caftan.jpg", text: "Présentation de pièces de la Maison portées par ses invitées.", gallery: ["assets/img/event-invitees-caftan.jpg"] },
     { id: "ev-film", title: "Fresh Joy Collection by Samira Mhaidi", type: "Film", date: "", dateLabel: "2022", place: "", cover: "", video: "", brief: "Film de la collection Fresh Joy (présent sur l'ancien site) : récupérer le fichier MP4 d'origine.", text: "Le film de la collection Fresh Joy." }
-  ],
+  ]),
 
   media: []
 };
+
+/* Mises à jour de contenu : appliquées une seule fois au contenu déjà enregistré
+   (navigateur ou Supabase), sans effacer ce que la cliente a modifié. */
+window.SM_PATCHES = [
+  {
+    id: "2026-11-medias",
+    apply(d, clone) {
+      const u = window.SM_UPDATE_2026_11, S = d.settings;
+      const known = new Set(d.events.map((e) => e.id));
+      d.events = clone(u.events.filter((e) => !known.has(e.id))).concat(d.events);
+      const msgs = S.announcement.messages;
+      S.announcement.messages = u.messages.filter((m) => !msgs.includes(m)).concat(msgs);
+      const titles = new Set(S.timeline.map((t) => t.title));
+      S.timeline = S.timeline.concat(clone(u.timeline.filter((t) => !titles.has(t.title))));
+      if (!S.socials.instagram) S.socials.instagram = u.instagram;
+    }
+  }
+];

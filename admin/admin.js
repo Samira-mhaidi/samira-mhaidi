@@ -15,7 +15,10 @@
   const state = { range: 30, source: LIVE ? "real" : "demo", leadStatus: "all", leadType: "", leadQ: "", visitors: "all", media: { collection: "", category: "", catalogue: "", kind: "" }, uploadTo: { collection: "", category: "", catalogue: "" } };
   let after = [];
 
-  const ASSETS = ["hero-porte-doree.jpg", "portrait-samira.jpg", "look-emeraude-defile.jpg", "look-majorelle-defile.jpg", "detail-rose-poudre.jpg", "detail-dentelle-citron.jpg", "look-ivoire-or.jpg", "look-menthe-brocart.jpg", "look-bleu-roi.jpg", "look-corail-or.jpg", "look-corail-profil.jpg", "look-leopard.jpg", "look-ciel-porte-doree.jpg", "look-rose-nuit.jpg", "look-lanterne.jpg", "look-lanterne-aqua.jpg", "look-citron-lame.jpg", "look-citron-lame-pied.jpg", "look-ivoire-brun.jpg", "look-fuchsia.jpg", "look-turquoise-moucharabieh.jpg", "look-rose-sequins.jpg", "look-sable-fleuri.jpg", "runway-ivoire-or.jpg", "runway-jardin-fleuri.jpg", "runway-emeraude.jpg", "runway-pourpre.jpg", "runway-cape-ivoire.jpg", "runway-bleu-or.jpg", "event-photocall-ancmm.jpg", "event-conference.jpg", "event-conference-parole.jpg", "event-intervention.jpg", "event-invitees-caftan.jpg"].map((f) => "assets/img/" + f);
+  const ASSETS = ["hero-porte-doree.jpg", "portrait-samira.jpg", "look-emeraude-defile.jpg", "look-majorelle-defile.jpg", "detail-rose-poudre.jpg", "detail-dentelle-citron.jpg", "look-ivoire-or.jpg", "look-menthe-brocart.jpg", "look-bleu-roi.jpg", "look-corail-or.jpg", "look-corail-profil.jpg", "look-leopard.jpg", "look-ciel-porte-doree.jpg", "look-rose-nuit.jpg", "look-lanterne.jpg", "look-lanterne-aqua.jpg", "look-citron-lame.jpg", "look-citron-lame-pied.jpg", "look-ivoire-brun.jpg", "look-fuchsia.jpg", "look-turquoise-moucharabieh.jpg", "look-rose-sequins.jpg", "look-sable-fleuri.jpg", "runway-ivoire-or.jpg", "runway-jardin-fleuri.jpg", "runway-emeraude.jpg", "runway-pourpre.jpg", "runway-cape-ivoire.jpg", "runway-bleu-or.jpg", "event-photocall-ancmm.jpg", "event-conference.jpg", "event-conference-parole.jpg", "event-intervention.jpg", "event-invitees-caftan.jpg",
+    "evt-2m-poster.jpg", "evt-2m-groupe.jpg", "evt-2m-noir.jpg", "evt-2m-pois.jpg", "evt-2m-anis.jpg",
+    "evt-atm-emeraude-assise.jpg", "evt-atm-emeraude.jpg", "evt-atm-trio.jpg", "evt-atm-groupe.jpg", "evt-atm-dentelle.jpg", "evt-atm-fuchsia.jpg", "evt-atm-salon.jpg", "evt-atm-invitees.jpg", "evt-atm-noir.jpg",
+    "evt-vdf-emeraude.jpg", "evt-vdf-violet.jpg", "evt-vdf-pois.jpg", "evt-vdf-olive.jpg", "evt-vdf-rose.jpg", "evt-vdf-mauve.jpg", "evt-vdf-poster.jpg"].map((f) => "assets/img/" + f);
 
   const ic = (p) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
   const I = {
@@ -263,6 +266,8 @@
     const u = SM.url(ref);
     if (!u) return `<div class="thumb is-empty"><span class="thumb__empty">${esc(emptyLabel || "Vide — bloc annoté sur le site")}</span></div>`;
     const type = (D.media.find((m) => m.ref === ref) || {}).type || "";
+    const yt = SM.youtubeId(ref);
+    if (yt) return `<div class="thumb"><img src="https://i.ytimg.com/vi/${yt}/mqdefault.jpg" alt="" loading="lazy"><span class="thumb__kind pill pill--plain">YouTube</span></div>`;
     if (/pdf/.test(type) || /\.pdf(\?|$)/i.test(ref)) return `<div class="thumb"><span class="thumb__pdf">PDF</span></div>`;
     if (SM.isVideo(ref, type)) return `<div class="thumb"><video src="${esc(u)}" muted loop playsinline preload="metadata"></video><span class="thumb__kind pill pill--plain">vidéo</span></div>`;
     return `<div class="thumb"><img src="${esc(u)}" alt="" loading="lazy"></div>`;
@@ -296,9 +301,9 @@
     const cur = getPath(D, path) || "";
     const noUpload = LIVE && kind === "video";
     sheet(`Choisir ${kind === "video" ? "une vidéo" : kind === "pdf" ? "un PDF" : "une image"}`, `
-      ${noUpload ? `<div class="note note--gold"><b>Vidéos : ajout par lien uniquement.</b> Pour ne pas épuiser le quota gratuit de Supabase, les vidéos sont hébergées à part (Cloudinary, Vimeo, Cloudflare R2…). Collez ci-dessous le lien direct du fichier MP4.</div>` : `<div class="dropzone" data-drop><b>Glissez un fichier ici</b> ou <label class="btn-a btn-a--sm" style="margin-left:6px">Parcourir<input type="file" accept="${accept}" hidden data-file></label>
+      ${noUpload ? `<div class="note note--gold"><b>Vidéos : ajout par lien uniquement.</b> Pour ne pas épuiser le quota gratuit de Supabase, les vidéos sont hébergées à part (Cloudinary, Vimeo, Cloudflare R2…). Collez ci-dessous un lien YouTube (conseillé : aucun coût d'hébergement) ou le lien direct d'un fichier MP4. La vidéo ne se lance qu'au clic du visiteur.</div>` : `<div class="dropzone" data-drop><b>Glissez un fichier ici</b> ou <label class="btn-a btn-a--sm" style="margin-left:6px">Parcourir<input type="file" accept="${accept}" hidden data-file></label>
         <div style="margin-top:8px;font-size:12px;color:var(--muted)">${kind === "video" ? "MP4 H.264 conseillé, moins de 15 Mo pour un survol, moins de 40 Mo pour un film." : kind === "pdf" ? "PDF, moins de 15 Mo." : "JPEG, PNG ou WebP. Converti automatiquement en WebP, 1800 px maximum."}</div></div>`}
-      <label class="fld"><span>${noUpload ? "Lien de la vidéo" : "Ou coller un lien"}</span><input type="url" placeholder="https://… (fichier MP4 ou image)" data-url value="${/^https?:/.test(cur) ? esc(cur) : ""}"><small>MP4 H.264 conseillé : moins de 3 Mo pour un survol, moins de 8 Mo pour la vidéo d'ouverture.</small></label>
+      <label class="fld"><span>${noUpload ? "Lien de la vidéo" : "Ou coller un lien"}</span><input type="text" placeholder="https://youtu.be/… ou https://…/video.mp4" data-url value="${/^https?:/.test(cur) ? esc(cur) : ""}"><small>MP4 H.264 conseillé : moins de 3 Mo pour un survol, moins de 8 Mo pour la vidéo d'ouverture.</small></label>
       ${library.length ? `<div class="media-grid">${library.map((m) => `<div class="media-tile is-pick" data-choose="${esc(m.ref)}" tabindex="0">${thumb(m.ref)}<span class="media-tile__name">${esc(m.name)}</span></div>`).join("")}</div>` : `<div class="empty">Aucun fichier de ce type dans la médiathèque.</div>`}
     `, `<button class="btn-a btn-a--danger" data-clear>Retirer (bloc vide annoté)</button><button class="btn-a" data-close>Annuler</button><button class="btn-a btn-a--dark" data-ok-url>Valider le lien</button>`, true);
     const sh = $(".sheet");
@@ -339,7 +344,7 @@
     document.body.innerHTML = `<div class="login">
       <div class="login__visual"><div class="login__quote"><span>Back-office</span><b>SAMIRA MHAIDI</b></div></div>
       <div class="login__form"><form class="login__box" novalidate>
-        <img src="../assets/img/logo-sm-cercle.png" alt="">
+        <img src="../assets/img/logo-sm-cercle.webp" alt="">
         <h1>Espace administration</h1>
         <p>Gérez les collections, les médias, les demandes et les statistiques du site.</p>
         <div class="login__err" role="alert">E-mail ou mot de passe incorrect.</div>
@@ -373,6 +378,10 @@
     if (SM.contentMissing) {
       SM.saveData(D);
       if (await SM.flush()) { SM.contentMissing = false; toast("Contenu initial publié en ligne"); }
+    } else if (SM.patched) {
+      /* Nouveaux contenus livrés avec cette version du site : enregistrés une fois en ligne. */
+      SM.saveData(D);
+      if (await SM.flush()) { SM.patched = false; toast("Nouveaux contenus du site enregistrés en ligne"); }
     }
   }
 
@@ -386,7 +395,7 @@
   ];
   function renderApp() {
     document.body.innerHTML = `<div class="app">
-      <aside class="side"><div class="side__brand"><img src="../assets/img/logo-sm-cercle.png" alt=""><div><b>SAMIRA MHAIDI</b><small>Back-office</small></div></div>
+      <aside class="side"><div class="side__brand"><img src="../assets/img/logo-sm-cercle.webp" alt=""><div><b>SAMIRA MHAIDI</b><small>Back-office</small></div></div>
         <nav>${NAV.map((n) => n.g ? `<div class="side__group">${n.g}</div>` : `<a class="nav" href="#/${n.id}" data-nav="${n.id}">${I[n.icon]}<span>${n.label}</span>${n.count ? `<span class="count" data-newcount></span>` : ""}</a>`).join("")}</nav>
         <div class="side__foot"><a class="nav" href="../index.html" target="_blank">${I.ext}<span>Voir le site</span></a><a class="nav" href="#" data-logout>${I.out}<span>Déconnexion</span></a>
         <div class="side__demo">${LIVE ? `<b>En ligne</b> · ${esc(SM.getAccount().email)}` : "<b>Mode démo</b> · données locales à ce navigateur"}</div></div>
@@ -747,16 +756,36 @@
   /* ---------- événements ---------- */
   VIEWS.evenements = function () {
     return {
-      title: "Événements", sub: `${D.events.length} événements`, tools: `<a class="btn-a" href="../evenements.html" target="_blank">${I.ext} Voir la page</a><button class="btn-a btn-a--dark" data-add-event>${I.plus} Ajouter</button>`,
-      html: `<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th style="width:90px">Visuel</th><th>Titre</th><th>Type</th><th>Date</th><th>Lieu</th><th></th></tr></thead><tbody>
-      ${D.events.map((ev, i) => `<tr><td style="width:90px">${slot("", `events.${i}.cover`)}</td><td><input class="inp" data-k="events.${i}.title" value="${esc(ev.title)}"><textarea class="inp" style="height:auto;margin-top:6px;padding:8px 12px" rows="2" data-k="events.${i}.text">${esc(ev.text || "")}</textarea></td><td><input class="inp" data-k="events.${i}.type" value="${esc(ev.type)}"></td><td><input class="inp" data-k="events.${i}.dateLabel" value="${esc(ev.dateLabel || "")}" placeholder="ex. 12 mars 2026"></td><td><input class="inp" data-k="events.${i}.place" value="${esc(ev.place || "")}"></td>
-        <td><div style="display:grid;gap:6px">${slot("Vidéo", `events.${i}.video`, "video")}<button class="icon-btn" data-del-event="${i}" title="Supprimer">${I.trash}</button></div></td></tr>`).join("")}
-      </tbody></table></div></div>`
+      title: "Événements", sub: `${D.events.length} événements · le premier de la liste est mis « À la une » ; les 4 premiers apparaissent sur l'accueil`, tools: `<a class="btn-a" href="../evenements.html" target="_blank">${I.ext} Voir la page</a><button class="btn-a btn-a--dark" data-add-event>${I.plus} Ajouter</button>`,
+      html: D.events.map((ev, i) => {
+        const P = `events.${i}`, gal = ev.gallery || [];
+        return `<div class="card"><div class="card__head"><h2>${String(i + 1).padStart(2, "0")} · ${esc(ev.title)}</h2>${i === 0 ? '<span class="pill pill--gold">À la une</span>' : i < 4 ? '<span class="pill pill--plain">Accueil</span>' : ""}
+          <div class="tools"><a class="btn-a btn-a--sm" href="../evenements.html#${esc(ev.id)}" target="_blank">${I.ext} Voir</a><button class="icon-btn" data-move-event="${i}:-1" title="Monter" ${i === 0 ? "disabled" : ""}>${I.up}</button><button class="icon-btn" data-move-event="${i}:1" title="Descendre" ${i === D.events.length - 1 ? "disabled" : ""}>${I.down}</button><button class="icon-btn" data-del-event="${i}" title="Supprimer">${I.trash}</button></div></div>
+          <div class="card__body" style="display:grid;gap:18px">
+            <div style="display:grid;grid-template-columns:110px 110px minmax(0,1fr);gap:18px;align-items:start">
+              ${slot("Photo / affiche", P + ".cover")}${slot("Vidéo (au clic)", P + ".video", "video")}
+              <div class="form-grid">
+                <label class="fld full"><span>Titre</span><input type="text" data-k="${P}.title" value="${esc(ev.title)}" data-rerender></label>
+                <label class="fld"><span>Type</span><input type="text" data-k="${P}.type" value="${esc(ev.type)}" placeholder="Défilé, Télévision, Salon…"></label>
+                <label class="fld"><span>Date affichée</span><input type="text" data-k="${P}.dateLabel" value="${esc(ev.dateLabel || "")}" placeholder="ex. 13 août 2026"></label>
+                <label class="fld"><span>Lieu</span><input type="text" data-k="${P}.place" value="${esc(ev.place || "")}"></label>
+                <label class="fld"><span>Format du visuel</span><select data-k="${P}.ratio">${[["", "Automatique"], ["4/5", "Portrait 4:5"], ["16/9", "Paysage 16:9"], ["1/1", "Carré"]].map(([v, l]) => `<option value="${v}" ${(ev.ratio || "") === v ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+                <label class="fld full"><span>Texte</span><textarea rows="3" data-k="${P}.text">${esc(ev.text || "")}</textarea></label>
+              </div>
+            </div>
+            <div><div style="font-size:12px;color:var(--muted);margin-bottom:8px">Galerie photo (${gal.length}) — affichée sous le texte, agrandie au clic. La vidéo : lien YouTube conseillé (aucun coût d'hébergement).</div>
+              <div class="media-grid" style="grid-template-columns:repeat(auto-fill,minmax(96px,1fr))">${gal.map((g, gi) => `<div class="media-tile">${slot("", `${P}.gallery.${gi}`)}<div class="media-tile__acts"><button class="icon-btn" data-gal-del="${i}:${gi}" title="Retirer de la galerie">${I.trash}</button></div></div>`).join("")}
+                <button class="card coll-card--new" style="min-height:96px;display:grid;place-items:center" data-gal-add="${i}">${I.plus}<span style="font-size:12px">Ajouter</span></button></div></div>
+          </div></div>`;
+      }).join("") || `<div class="empty">Aucun événement.</div>`
     };
   };
   document.addEventListener("click", (e) => {
-    if (e.target.closest("[data-add-event]")) { D.events.unshift({ id: SM.uid("ev"), title: "Nouvel événement", type: "Défilé", date: "", dateLabel: "Date à confirmer", place: "", cover: "", brief: "Photo de l'événement à fournir.", text: "", gallery: [] }); save("Événement ajouté"); rerender(); }
+    if (e.target.closest("[data-add-event]")) { D.events.unshift({ id: SM.uid("ev"), title: "Nouvel événement", type: "Défilé", date: "", dateLabel: "Date à confirmer", place: "", cover: "", video: "", brief: "Photo de l'événement à fournir.", text: "", gallery: [] }); save("Événement ajouté en tête de liste"); rerender(); }
     const d = e.target.closest("[data-del-event]"); if (d && confirm("Supprimer cet événement ?")) { D.events.splice(Number(d.dataset.delEvent), 1); save(); rerender(); }
+    const mv = e.target.closest("[data-move-event]"); if (mv) { const [i, dir] = mv.dataset.moveEvent.split(":").map(Number); const [x] = D.events.splice(i, 1); D.events.splice(i + dir, 0, x); save("Ordre mis à jour"); rerender(); }
+    const ga = e.target.closest("[data-gal-add]"); if (ga) { const i = Number(ga.dataset.galAdd); const ev = D.events[i]; ev.gallery = ev.gallery || []; ev.gallery.push(""); picker(`events.${i}.gallery.${ev.gallery.length - 1}`, "image", () => { ev.gallery = ev.gallery.filter(Boolean); save(); rerender(); }); }
+    const gd = e.target.closest("[data-gal-del]"); if (gd) { const [i, gi] = gd.dataset.galDel.split(":").map(Number); D.events[i].gallery.splice(gi, 1); save("Photo retirée de la galerie"); rerender(); }
   });
 
   /* ---------- textes & bandeau ---------- */
@@ -903,7 +932,7 @@
     await SM.ready({ fresh: true });
     /* Ne jamais éditer (et donc écraser) le contenu en ligne s'il n'a pas pu être lu. */
     if (LIVE && SM.contentError) {
-      document.body.innerHTML = `<div class="login"><div class="login__form"><div class="login__box"><img src="../assets/img/logo-sm-cercle.png" alt=""><h1>${SM.contentError.status === 404 ? "Base de données à installer" : "Connexion impossible"}</h1><p>${SM.contentError.status === 404 ? "La base Supabase n'est pas encore installée : exécutez le fichier <code>docs/supabase-schema.sql</code> dans Supabase (SQL Editor), puis rechargez cette page." : `Le contenu du site n'a pas pu être chargé depuis Supabase (${esc(errMsg(SM.contentError))}). Vérifiez votre connexion internet puis réessayez.`}</p><button class="btn-a btn-a--dark btn-a--full" onclick="location.reload()">Réessayer</button></div></div></div>`;
+      document.body.innerHTML = `<div class="login"><div class="login__form"><div class="login__box"><img src="../assets/img/logo-sm-cercle.webp" alt=""><h1>${SM.contentError.status === 404 ? "Base de données à installer" : "Connexion impossible"}</h1><p>${SM.contentError.status === 404 ? "La base Supabase n'est pas encore installée : exécutez le fichier <code>docs/supabase-schema.sql</code> dans Supabase (SQL Editor), puis rechargez cette page." : `Le contenu du site n'a pas pu être chargé depuis Supabase (${esc(errMsg(SM.contentError))}). Vérifiez votre connexion internet puis réessayez.`}</p><button class="btn-a btn-a--dark btn-a--full" onclick="location.reload()">Réessayer</button></div></div></div>`;
       return;
     }
     D = SM.getData();
